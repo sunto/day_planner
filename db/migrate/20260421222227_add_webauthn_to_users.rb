@@ -1,0 +1,17 @@
+class AddWebauthnToUsers < ActiveRecord::Migration[8.1]
+  def change
+    # Used by the webauthn feature
+    create_table :user_webauthn_user_ids, id: false do |t|
+      t.uuid :id, primary_key: true
+      t.foreign_key :users, column: :id
+      t.string :webauthn_id, null: false
+    end
+    create_table :user_webauthn_keys, primary_key: [ :user_id, :webauthn_id ] do |t|
+      t.references :user, foreign_key: true, type: :uuid
+      t.string :webauthn_id
+      t.string :public_key, null: false
+      t.integer :sign_count, null: false
+      t.datetime :last_use, null: false, default: -> { "CURRENT_TIMESTAMP" }
+    end
+  end
+end

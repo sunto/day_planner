@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_26_123000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_21_222227) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -20,6 +20,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_123000) do
     t.datetime "email_last_sent", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "key", null: false
     t.datetime "requested_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+  end
+
+  create_table "user_webauthn_keys", primary_key: ["user_id", "webauthn_id"], force: :cascade do |t|
+    t.datetime "last_use", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "public_key", null: false
+    t.integer "sign_count", null: false
+    t.uuid "user_id", null: false
+    t.string "webauthn_id", null: false
+    t.index ["user_id"], name: "index_user_webauthn_keys_on_user_id"
+  end
+
+  create_table "user_webauthn_user_ids", id: :uuid, default: nil, force: :cascade do |t|
+    t.string "webauthn_id", null: false
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -35,4 +48,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_123000) do
   end
 
   add_foreign_key "account_verification_keys", "users", column: "id"
+  add_foreign_key "user_webauthn_keys", "users"
+  add_foreign_key "user_webauthn_user_ids", "users", column: "id"
 end

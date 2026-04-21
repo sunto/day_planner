@@ -236,6 +236,10 @@ body.auth-body {
   color: var(--color-danger);
 }
 
+.auth-hidden {
+  display: none;
+}
+
 .auth-button {
   display: inline-flex;
   width: 100%;
@@ -269,6 +273,50 @@ body.auth-body {
 
 .auth-secondary {
   margin-top: 1.25rem;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0 0;
+  color: var(--color-text-faint);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.auth-passkey-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.auth-passkey-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1.1rem;
+  background: rgb(247 251 248 / 0.85);
+  padding: 0.9rem 1rem;
+}
+
+.auth-radio {
+  margin-top: 0.25rem;
+  accent-color: var(--color-charcoal-blue);
 }
 
 .auth-footer {

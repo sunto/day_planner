@@ -1,0 +1,39 @@
+<% cred = rodauth.new_webauthn_credential %>
+
+<section class="auth-shell">
+  <div class="auth-panel">
+    <div class="auth-card">
+      <%= render "auth_card_logo" %>
+      <div class="auth-card-intro">
+        <h2 class="auth-title">Add passkey</h2>
+        <p class="auth-subtitle">Use this device, browser, or password manager to sign in without typing your password.</p>
+      </div>
+
+      <%= form_with url: request.path, method: :post, id: "webauthn-setup-form", data: { credential_options: cred.as_json.to_json, turbo: false }, class: "auth-form" do |form| %>
+        <%= form.hidden_field rodauth.webauthn_setup_challenge_param, value: cred.challenge %>
+        <%= form.hidden_field rodauth.webauthn_setup_challenge_hmac_param, value: rodauth.compute_hmac(cred.challenge) %>
+        <%= form.text_field rodauth.webauthn_setup_param, value: "", id: "webauthn-setup", class: "auth-hidden", aria: { hidden: "true" } %>
+
+        <% if rodauth.two_factor_modifications_require_password? %>
+          <div class="auth-field">
+            <%= form.label "password", rodauth.password_label, class: "auth-label" %>
+            <%= form.password_field rodauth.password_param, value: "", id: "password", autocomplete: rodauth.password_field_autocomplete_value, required: true, class: "auth-input #{'auth-input-error' if rodauth.field_error(rodauth.password_param)}", aria: ({ invalid: true, describedby: "password_error_message" } if rodauth.field_error(rodauth.password_param)) %>
+            <%= content_tag(:span, rodauth.field_error(rodauth.password_param), class: "auth-error", id: "password_error_message") if rodauth.field_error(rodauth.password_param) %>
+          </div>
+        <% end %>
+
+        <div id="webauthn-setup-button">
+          <%= form.submit rodauth.webauthn_setup_button, class: "auth-button" %>
+        </div>
+      <% end %>
+
+      <div class="auth-secondary">
+        <ul class="auth-footer">
+          <li><%= link_to "Back to settings", "/settings/user", class: "auth-link" %></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%= javascript_include_tag rodauth.webauthn_setup_js_path, extname: false %>

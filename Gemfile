@@ -51,6 +51,7 @@ group :development do
 end
 
 gem "rodauth-rails", "~> 2.1"
+gem "webauthn", "~> 3.4"
 gem "pundit", "~> 2.5"
 gem "resend"
 # Enables Sequel to use Active Record's database connection

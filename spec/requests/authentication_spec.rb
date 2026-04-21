@@ -5,6 +5,13 @@ RSpec.describe "Authentication", type: :request do
     post "/login", params: { email: user.email, password: "password123" }
   end
 
+  def add_passkey(user)
+    User.connection.execute(<<~SQL.squish)
+      INSERT INTO user_webauthn_keys (user_id, webauthn_id, public_key, sign_count, last_use)
+      VALUES (#{User.connection.quote(user.id)}, 'credential-id', 'public-key', 0, CURRENT_TIMESTAMP)
+    SQL
+  end
+
   describe "GET /login" do
     it "renders the login page with the server-rendered auth shell" do
       get "/login"
@@ -13,6 +20,9 @@ RSpec.describe "Authentication", type: :request do
       expect(response.body).to include("Login")
       expect(response.body).to include("auth-card")
       expect(response.body).to include('action="/login"')
+      expect(response.body).to include('value="Continue"')
+      expect(response.body).to include('id="webauthn-login-form"')
+      expect(response.body).not_to include('id="password"')
       expect(response.body).to include("Sign Up")
       expect(response.body).not_to include("Resend Verify Account Information")
     end
@@ -66,6 +76,18 @@ RSpec.describe "Authentication", type: :request do
   end
 
   describe "POST /login" do
+    it "offers password and passkey options after a recognized email" do
+      user = User.create!(email: "passkey@example.com", password: "password123")
+      add_passkey(user)
+
+      post "/login", params: { email: user.email }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('id="password"')
+      expect(response.body).to include('id="webauthn-auth-form"')
+      expect(response.body).to include("Use passkey")
+    end
+
     it "re-renders the form with field errors when credentials are invalid" do
       post "/login", params: { email: "", password: "" }
 

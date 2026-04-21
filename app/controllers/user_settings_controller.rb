@@ -28,8 +28,22 @@ class UserSettingsController < InertiaController
         last_name: form_field(form, :last_name, current_user.last_name),
         email: form_field(form, :email, current_user.email)
       },
+      passkeys: {
+        count: passkey_count
+      },
       errors: errors
     }
+  end
+
+  def passkey_count
+    return 0 unless ActiveRecord::Base.connection.data_source_exists?(:user_webauthn_keys)
+
+    ActiveRecord::Base.connection.select_value(
+      ActiveRecord::Base.sanitize_sql([
+        "SELECT COUNT(*) FROM user_webauthn_keys WHERE user_id = ?",
+        current_user.id
+      ])
+    ).to_i
   end
 
   def form_field(form, key, fallback)

@@ -20,5 +20,5 @@
     </div>
   <% end %>
 
-  <%= form.submit rodauth.login_button, class: "auth-button" %>
+  <%= form.submit(rodauth.skip_password_field_on_login? ? "Continue" : rodauth.login_button, class: "auth-button") %>
 <% end %>

@@ -2,7 +2,7 @@ require "sequel/core"
 
 class RodauthMain < Rodauth::Rails::Auth
   configure do
-    enable :create_account, :internal_request, :login, :logout, :verify_account
+    enable :create_account, :internal_request, :login, :logout, :verify_account, :webauthn, :webauthn_login, :webauthn_autofill
 
     db Sequel.postgres(extensions: :activerecord_connection, keep_reference: false)
     accounts_table :users
@@ -16,6 +16,25 @@ class RodauthMain < Rodauth::Rails::Auth
     login_label "Email"
     create_account_link_text "Sign Up"
     create_account_button "Sign Up"
+
+    webauthn_keys_table :user_webauthn_keys
+    webauthn_user_ids_table :user_webauthn_user_ids
+    webauthn_keys_account_id_column :user_id
+    webauthn_rp_name "App Flow Starter"
+    webauthn_setup_button "Add passkey"
+    webauthn_auth_button "Use passkey"
+    webauthn_remove_button "Remove passkey"
+    webauthn_login_user_verification_additional_factor? true
+    webauthn_setup_link_text "Add passkey"
+    webauthn_auth_link_text "Use passkey"
+    webauthn_remove_link_text "Remove passkey"
+    webauthn_setup_notice_flash "Passkey added."
+    webauthn_remove_notice_flash "Passkey removed."
+    webauthn_setup_error_flash "Passkey could not be added."
+    webauthn_auth_error_flash "Passkey authentication failed."
+    webauthn_login_error_flash "Passkey sign-in failed."
+    webauthn_remove_error_flash "Passkey could not be removed."
+    webauthn_not_setup_error_flash "No passkey is set up for this account."
 
     # Passwords shorter than 8 characters are considered weak according to OWASP.
     password_minimum_length 8
@@ -36,6 +55,8 @@ class RodauthMain < Rodauth::Rails::Auth
 
     login_redirect "/"
     logout_redirect { login_path }
+    webauthn_setup_redirect "/settings/user"
+    webauthn_remove_redirect "/settings/user"
   end
 
   # Rodauth normally collects the password only on the verify-account screen when

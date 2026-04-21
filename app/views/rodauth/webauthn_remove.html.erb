@@ -1,0 +1,42 @@
+<section class="auth-shell">
+  <div class="auth-panel">
+    <div class="auth-card">
+      <%= render "auth_card_logo" %>
+      <div class="auth-card-intro">
+        <h2 class="auth-title">Remove passkey</h2>
+        <p class="auth-subtitle">Choose the passkey to remove from this account.</p>
+      </div>
+
+      <%= form_with url: rodauth.webauthn_remove_path, method: :post, id: "webauthn-remove-form", data: { turbo: false }, class: "auth-form" do |form| %>
+        <% if rodauth.two_factor_modifications_require_password? %>
+          <div class="auth-field">
+            <%= form.label "password", rodauth.password_label, class: "auth-label" %>
+            <%= form.password_field rodauth.password_param, value: "", id: "password", autocomplete: rodauth.password_field_autocomplete_value, required: true, class: "auth-input #{'auth-input-error' if rodauth.field_error(rodauth.password_param)}", aria: ({ invalid: true, describedby: "password_error_message" } if rodauth.field_error(rodauth.password_param)) %>
+            <%= content_tag(:span, rodauth.field_error(rodauth.password_param), class: "auth-error", id: "password_error_message") if rodauth.field_error(rodauth.password_param) %>
+          </div>
+        <% end %>
+
+        <fieldset class="auth-passkey-list">
+          <% (usage = rodauth.account_webauthn_usage).each do |id, last_use| %>
+            <% last_use = last_use.strftime(rodauth.strftime_format) if last_use.is_a?(Time) %>
+            <div class="auth-passkey-option">
+              <%= form.radio_button rodauth.webauthn_remove_param, id, id: "webauthn-remove-#{id}", class: "auth-radio", aria: ({ invalid: true, describedby: "webauthn_remove_error_message" } if rodauth.field_error(rodauth.webauthn_remove_param)) %>
+              <div>
+                <%= form.label "webauthn-remove-#{id}", "Last used: #{last_use}", class: "auth-label" %>
+                <%= content_tag(:span, rodauth.field_error(rodauth.webauthn_remove_param), class: "auth-error", id: "webauthn_remove_error_message") if rodauth.field_error(rodauth.webauthn_remove_param) && id == usage.keys.last %>
+              </div>
+            </div>
+          <% end %>
+        </fieldset>
+
+        <%= form.submit rodauth.webauthn_remove_button, class: "auth-button" %>
+      <% end %>
+
+      <div class="auth-secondary">
+        <ul class="auth-footer">
+          <li><%= link_to "Back to settings", "/settings/user", class: "auth-link" %></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
