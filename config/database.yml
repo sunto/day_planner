@@ -23,19 +23,19 @@ local: &local
   <<: *default
   host: <%= ENV.fetch("DB_HOST", "localhost") %>
   port: <%= ENV.fetch("DB_PORT", 15432) %>
-  username: <%= ENV.fetch("DB_USERNAME", "app_flow_starter") %>
-  password: <%= ENV.fetch("DB_PASSWORD", "app_flow_starter") %>
+  username: <%= ENV.fetch("DB_USERNAME", "day_planner") %>
+  password: <%= ENV.fetch("DB_PASSWORD", "day_planner") %>
 
 
 development:
   <<: *local
-  database: <%= ENV.fetch("DB_NAME", "app_flow_starter_development") %>
+  database: <%= ENV.fetch("DB_NAME", "day_planner_development") %>
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
   # When left blank, PostgreSQL will use the default role. This is
   # the same name as the operating system user running Rails.
-  #username: app_flow_starter
+  #username: day_planner
 
   # The password associated with the PostgreSQL role (username).
   #password:
@@ -63,7 +63,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *local
-  database: <%= ENV.fetch("TEST_DB_NAME", "app_flow_starter_test") %>
+  database: <%= ENV.fetch("TEST_DB_NAME", "day_planner_test") %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -87,8 +87,8 @@ test:
 #
 production:
   <<: *default
-  database: app_flow_starter_production
-  username: app_flow_starter
+  database: day_planner_production
+  username: day_planner
   password: <%= ENV["FLOWCAST_DATABASE_PASSWORD"] %>
   # db:prepare (production Docker entrypoint) must not load demo seeds on first boot.
   seeds: false

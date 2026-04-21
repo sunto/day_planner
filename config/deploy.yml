@@ -1,5 +1,5 @@
-service: app_flow_starter
-image: laterolabs/app_flow_starter
+service: day_planner
+image: laterolabs/day_planner
 
 ssh:
   user: deployer

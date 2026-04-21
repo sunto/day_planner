@@ -1,8 +1,8 @@
 # Name of your application. Used to uniquely configure containers.
-service: app_flow_starter-production
+service: day_planner-production
 
 # Name of the container image.
-image: laterolabs/app_flow_starter_production
+image: laterolabs/day_planner_production
 
 # Deploy to these servers.
 servers:
@@ -12,36 +12,36 @@ servers:
     proxy:
       ssl: true
       hosts:
-        - app_flow_starter.laterolabs.com
+        - day_planner.laterolabs.com
   rpc:
     hosts: *shared_hosts
     options:
-      network-alias: app_flow_starter-production-rpc
+      network-alias: day_planner-production-rpc
 
 # Use accessory services (secrets come from .kamal/secrets.production).
-# DATABASE_URL=postgres://app_flow_starter-production-user:<POSTGRES_PASSWORD>@app_flow_starter-production-postgres:5432/app_flow_starter-production
-# REDIS_URL=redis://:<REDIS_PASSWORD>@app_flow_starter-production-redis:6379/0
+# DATABASE_URL=postgres://day_planner-production-user:<POSTGRES_PASSWORD>@day_planner-production-postgres:5432/day_planner-production
+# REDIS_URL=redis://:<REDIS_PASSWORD>@day_planner-production-redis:6379/0
 accessories:
   postgres:
-    service: app_flow_starter-production-postgres
+    service: day_planner-production-postgres
     hosts: *shared_hosts
     env:
       clear:
-        POSTGRES_USER: app_flow_starter-production-user
-        POSTGRES_DB: app_flow_starter-production
+        POSTGRES_USER: day_planner-production-user
+        POSTGRES_DB: day_planner-production
     directories:
-      - /home/deployer/app_flow_starter-production-postgres:/var/lib/postgresql
+      - /home/deployer/day_planner-production-postgres:/var/lib/postgresql
   redis:
-    service: app_flow_starter-production-redis
+    service: day_planner-production-redis
     hosts: *shared_hosts
   anycable_go:
-    service: app_flow_starter-production-anycable-go
+    service: day_planner-production-anycable-go
     hosts: *shared_hosts
     env:
       clear:
-        ANYCABLE_RPC_HOST: app_flow_starter-production-rpc:50051
+        ANYCABLE_RPC_HOST: day_planner-production-rpc:50051
       secret:
         - ANYCABLE_REDIS_URL
     proxy:
       ssl: true
-      host: app_flow_starter-websockets.laterolabs.com
+      host: day_planner-websockets.laterolabs.com

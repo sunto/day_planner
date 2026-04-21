@@ -11,7 +11,7 @@ end
 
 Rails.application.config.session_store(
   :cookie_store,
-  key: "_app_flow_starter_session",
+  key: "_day_planner_session",
   secure: Rails.env.production?,
   same_site: :lax,
   domain: cookie_domain

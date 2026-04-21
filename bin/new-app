@@ -24,7 +24,7 @@ slug = app_name.downcase.gsub(/[^a-z0-9]+/, "_").gsub(/^_|_$/, "")
 
 replacements = {
   "App Flow Starter" => app_name,
-  "app_flow_starter" => slug,
+  "day_planner" => slug,
   "Flowcast" => app_name,
   "Flowcast" => app_name
 }
