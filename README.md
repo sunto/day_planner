@@ -52,6 +52,8 @@ Then start the app:
 bin/dev
 ```
 
+The app defaults to http://localhost:3010 in development.
+
 ## Seeded demo account
 
 ```bash

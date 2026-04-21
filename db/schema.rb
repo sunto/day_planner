@@ -31,7 +31,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_123000) do
     t.integer "status_id", default: 2, null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
-    t.check_constraint "email ~ '^[^,;@ \n]+@[^,@; \n]+.[^,@; \n]+$'::citext", name: "valid_email"
+    t.check_constraint "email ~ '^[^,;@ \r\n]+@[^,@; \r\n]+\\.[^,@; \r\n]+$'::citext", name: "valid_email"
   end
 
   add_foreign_key "account_verification_keys", "users", column: "id"
