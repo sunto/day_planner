@@ -86,7 +86,7 @@ jobs:
                 gh api -X DELETE "users/${OWNER}/packages/container/${IMAGE_NAME}/versions/${VERSION_ID}"
               done
 
-      - uses: webfactory/ssh-agent@v0.9.0
+      - uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.DEPLOYMENT_SSH_PRIVATE_KEY }}
 
