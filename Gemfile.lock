@@ -98,7 +98,7 @@ GEM
     base64 (0.3.0)
     bcrypt (3.1.22)
     bcrypt_pbkdf (1.1.2)
-    bigdecimal (4.0.1)
+    bigdecimal (4.1.2)
     bindex (0.8.1)
     bootsnap (1.23.0)
       msgpack (~> 1.2)
@@ -330,8 +330,9 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
-    resend (1.0.1)
-      httparty (>= 0.21.0)
+    resend (1.3.0)
+      base64
+      httparty (>= 0.22.0)
     roda (3.102.0)
       rack
     rodauth (2.43.0)
@@ -500,7 +501,7 @@ CHECKSUMS
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
   bcrypt (3.1.22) sha256=1f0072e88c2d705d94aff7f2c5cb02eb3f1ec4b8368671e19112527489f29032
   bcrypt_pbkdf (1.1.2) sha256=c2414c23ce66869b3eb9f643d6a3374d8322dfb5078125c82792304c10b94cf6
-  bigdecimal (4.0.1) sha256=8b07d3d065a9f921c80ceaea7c9d4ae596697295b584c296fe599dd0ad01c4a7
+  bigdecimal (4.1.2) sha256=53d217666027eab4280346fba98e7d5b66baaae1b9c3c1c0ffe89d48188a3fbd
   bindex (0.8.1) sha256=7b1ecc9dc539ed8bccfc8cb4d2732046227b09d6f37582ff12e50a5047ceb17e
   bootsnap (1.23.0) sha256=c1254f458d58558b58be0f8eb8f6eec2821456785b7cdd1e16248e2020d3f214
   brakeman (8.0.4) sha256=7bf921fa9638544835df9aa7b3e720a9a72c0267f34f92135955edd80d4dcf6f
@@ -605,7 +606,7 @@ CHECKSUMS
   redis-client (0.28.0) sha256=888892f9cd8787a41c0ece00bdf5f556dfff7770326ce40bb2bc11f1bfec824b
   regexp_parser (2.11.3) sha256=ca13f381a173b7a93450e53459075c9b76a10433caadcb2f1180f2c741fc55a4
   reline (0.6.3) sha256=1198b04973565b36ec0f11542ab3f5cfeeec34823f4e54cebde90968092b1835
-  resend (1.0.1) sha256=6f8a0a4e545e45070515a346ca723639cd712e043e4d973d7619f1125daff660
+  resend (1.3.0) sha256=e9e141b0a14cd060e2dac70c552a2f6e688d601f7af5bb47f874b473949d0d1d
   roda (3.102.0) sha256=b2156fff6d2b1b52bfac39e4ccde0d820a26594f069c3d9e99cc0853f7ee7dcc
   rodauth (2.43.0) sha256=4dc5f5c6b8013502352beb342f72b64515680af2f95603f7248031fd9203984a
   rodauth-model (0.4.0) sha256=dc28eb1863f0b8facb1afe2ea6b1e1159821c32989eea237d2a41c287f958c1e
