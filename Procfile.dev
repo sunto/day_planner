@@ -1,0 +1,5 @@
+
+vite: /bin/bash -lc 'source "$HOME/.nvm/nvm.sh" && nvm use >/dev/null && bin/vite dev'
+web: PORT=3000 CABLE_URL=ws://localhost:8080/cable bin/rails s
+rpc: bin/anycable
+ws: bin/anycable-go

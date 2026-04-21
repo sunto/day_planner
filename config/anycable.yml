@@ -1,0 +1,13 @@
+default: &default
+  websocket_url: <%= ENV.fetch("CABLE_URL", "/cable") %>
+  redis_url: <%= ENV.fetch("ANYCABLE_REDIS_URL", ENV.fetch("REDIS_URL", "redis://localhost:16379/0")) %>
+  broadcast_adapter: redisx
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default

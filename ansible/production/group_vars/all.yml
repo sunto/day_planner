@@ -1,0 +1,3 @@
+# Rails App base info
+ansible_stage: production
+deploy_user: deployer

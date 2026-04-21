@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [[ ! -f .env.compose ]]; then
+  echo "Missing .env.compose. Copy .env.compose.example first." >&2
+  exit 1
+fi
+
+exec docker compose --env-file .env.compose up -d "$@"

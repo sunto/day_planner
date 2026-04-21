@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the Flowcast Postgres nightly base backup
+
+[Timer]
+OnCalendar={{ postgres_backup_basebackup_schedule }}
+Persistent=true
+RandomizedDelaySec=10m
+Unit=flowcast-postgres-basebackup.service
+
+[Install]
+WantedBy=timers.target

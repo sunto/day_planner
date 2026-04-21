@@ -1,0 +1,5 @@
+# vars for lnovara.deploy_user
+# as per https://github.com/lnovara/ansible-deploy-user
+user_name: "{{ deploy_user }}"
+enable_passwordless_sudo: true
+# user_groups: []

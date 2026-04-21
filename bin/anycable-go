@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+export ANYCABLE_HOST="${ANYCABLE_HOST:-0.0.0.0}"
+export ANYCABLE_PORT="${ANYCABLE_PORT:-8080}"
+export ANYCABLE_PATH="${ANYCABLE_PATH:-/cable}"
+export ANYCABLE_RPC_HOST="${ANYCABLE_RPC_HOST:-127.0.0.1:50051}"
+export ANYCABLE_PUBSUB="${ANYCABLE_PUBSUB:-redis}"
+export ANYCABLE_BROADCAST_ADAPTER="${ANYCABLE_BROADCAST_ADAPTER:-redisx}"
+export ANYCABLE_REDIS_CHANNEL="${ANYCABLE_REDIS_CHANNEL:-__anycable__}"
+export ANYCABLE_REDIS_URL="${ANYCABLE_REDIS_URL:-${REDIS_URL:-redis://localhost:16379/0}}"
+
+exec anycable-go "$@"

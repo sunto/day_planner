@@ -1,0 +1,21 @@
+<section class="auth-shell">
+  <div class="auth-panel">
+    <div class="auth-card">
+      <%= render "auth_card_logo" %>
+      <p class="auth-eyebrow">Session controls</p>
+      <h2 class="auth-title">Sign out</h2>
+      <p class="auth-subtitle">End your current starter app session.</p>
+
+      <%= form_with url: rodauth.logout_path, method: :post, data: { turbo: false }, class: "auth-form" do |form| %>
+        <% if rodauth.features.include?(:active_sessions) %>
+          <div class="auth-checkbox-row">
+            <%= form.check_box rodauth.global_logout_param, id: "global-logout", include_hidden: false, class: "auth-checkbox" %>
+            <%= form.label "global-logout", rodauth.global_logout_label, class: "auth-label" %>
+          </div>
+        <% end %>
+
+        <%= form.submit rodauth.logout_button, class: "auth-button" %>
+      <% end %>
+    </div>
+  </div>
+</section>

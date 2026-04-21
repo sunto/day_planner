@@ -1,0 +1,6 @@
+postgres_backup_enabled: false
+postgres_backup_container_name: flowcast-production-postgres
+postgres_backup_data_dir: /var/lib/postgresql/data
+postgres_backup_basebackup_schedule: "*-*-* 02:15:00"
+postgres_backup_check_schedule: "*-*-* 03:00:00"
+postgres_backup_max_age_hours: 30

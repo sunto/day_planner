@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "optparse"
+
+options = {
+  module_name: nil
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: bin/new-app APP_NAME [--module-name MyApp]"
+
+  opts.on("--module-name NAME", "Ruby module name to write into config/application.rb") do |value|
+    options[:module_name] = value
+  end
+end
+
+parser.parse!
+app_name = ARGV.shift
+abort parser.to_s unless app_name
+
+module_name = options[:module_name] || app_name.gsub(/[^a-zA-Z0-9]/, " ").split.map(&:capitalize).join
+slug = app_name.downcase.gsub(/[^a-z0-9]+/, "_").gsub(/^_|_$/, "")
+
+replacements = {
+  "App Flow Starter" => app_name,
+  "app_flow_starter" => slug,
+  "Flowcast" => app_name,
+  "Flowcast" => app_name
+}
+
+files = [
+  "README.md",
+  "config/application.rb",
+  "config/database.yml",
+  "config/deploy.yml",
+  "config/deploy.production.yml",
+  "config/initializers/session_store.rb",
+  ".env.example",
+  ".env.compose.example",
+  "compose.yml",
+  "app/views/layouts/application.html.erb",
+  "app/views/layouts/authentication.html.erb",
+  "app/views/rodauth/_auth_card_logo.html.erb",
+  "app/frontend/entrypoints/inertia.jsx",
+  "app/frontend/components/app-shell.jsx"
+]
+
+files.each do |relative_path|
+  path = File.join(Dir.pwd, relative_path)
+  next unless File.exist?(path)
+
+  content = File.read(path)
+  replacements.each do |old_value, new_value|
+    content = content.gsub(old_value, new_value)
+  end
+  content = content.gsub(/module\s+AppFlowStarter/, "module #{module_name}")
+  File.write(path, content)
+end
+
+puts "Updated starter placeholders for #{app_name}."
+puts "Module name: #{module_name}"

@@ -1,0 +1,100 @@
+---
+# NOTE: prior to running this, ensure you have `.kamal/secrets.<stage>` set up properly
+- name: Run Kamal commands (locally)
+  vars_files:
+    - ../{{ansible_stage}}/group_vars/secrets.yml
+    - ../{{ansible_stage}}/group_vars/3_playbook_vars.yml
+  vars:
+    kamal_project_root: "{{ playbook_dir }}/../.."
+  hosts: all
+  gather_facts: true
+
+  remote_user: "{{deploy_user}}"
+
+  tasks:
+    - name: Bootstrap Kamal server
+      delegate_to: localhost
+      command: kamal server bootstrap -d {{ ansible_stage }}
+      args:
+        chdir: "{{ kamal_project_root }}"
+
+    - name: Add deployer to docker group
+      become: yes
+      user:
+        name: "{{deploy_user}}"
+        groups: docker
+        append: yes
+
+    - name: Bootstrap Kamal proxy
+      delegate_to: localhost
+      command: kamal proxy boot -d {{ ansible_stage }}
+      args:
+        chdir: "{{ kamal_project_root }}"
+
+    - name: Boot accessories (Postgres, Redis, AnyCable Go)
+      delegate_to: localhost
+      command: kamal accessory boot {{ item }} -d {{ ansible_stage }}
+      args:
+        chdir: "{{ kamal_project_root }}"
+      loop:
+        - postgres
+        - redis
+        - anycable_go
+
+    - name: Install jq for backup health checks
+      become: yes
+      apt:
+        name: jq
+        state: present
+        update_cache: yes
+      when: postgres_backup_enabled | default(false)
+
+    - name: Ensure backup script directory exists
+      become: yes
+      file:
+        path: /usr/local/libexec/flowcast/postgres
+        state: directory
+        mode: "0755"
+      when: postgres_backup_enabled | default(false)
+
+    - name: Install Postgres backup scripts
+      become: yes
+      copy:
+        src: "{{ kamal_project_root }}/scripts/postgres/{{ item }}"
+        dest: "/usr/local/libexec/flowcast/postgres/{{ item }}"
+        mode: "0755"
+      loop:
+        - backup-base.sh
+        - check-backups.sh
+        - common.sh
+        - list-backups.sh
+        - restore-latest.sh
+        - restore-to-time.sh
+      when: postgres_backup_enabled | default(false)
+
+    - name: Install Postgres backup systemd units
+      become: yes
+      template:
+        src: "../templates/{{ item }}.j2"
+        dest: "/etc/systemd/system/{{ item }}"
+        mode: "0644"
+      loop:
+        - flowcast-postgres-basebackup.service
+        - flowcast-postgres-basebackup.timer
+        - flowcast-postgres-backup-check.service
+        - flowcast-postgres-backup-check.timer
+      when: postgres_backup_enabled | default(false)
+
+    - name: Enable Postgres backup timers
+      become: yes
+      systemd_service:
+        name: "{{ item }}"
+        daemon_reload: yes
+        enabled: yes
+        state: started
+      loop:
+        - flowcast-postgres-basebackup.timer
+        - flowcast-postgres-backup-check.timer
+      when: postgres_backup_enabled | default(false)
+
+    # NOW, deploy the code using GHA!

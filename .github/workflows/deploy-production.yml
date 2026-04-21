@@ -1,0 +1,17 @@
+name: "[PRODUCTION] Deploy to VPS with Kamal"
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch name"
+        required: true
+        default: "main"
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/kamal-deploy.yml
+    with:
+      branch: ${{ github.event.inputs.branch }}
+      environment: production
+    secrets: inherit

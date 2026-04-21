@@ -1,0 +1,112 @@
+name: "[REUSABLE] Deploy with Kamal"
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  RUBY_VERSION: "4.0.2"
+  KAMAL_VERSION: "2.11.0"
+  GITHUB_REGISTRY_OWNER: laterolabs
+  GITHUB_REGISTRY_IMAGE_BASE_NAME: "flowcast"
+
+jobs:
+  deploy:
+    name: "Build and Deploy to VPS"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Update GITHUB_SHA with checked-out commit SHA
+        run: echo "GITHUB_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Confirm branch and SHA to deploy
+        run: 'echo "Deploying branch: ${{ inputs.branch }} @ ${{ env.GITHUB_SHA }}"'
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Load GitHub environment variables into Kamal secrets
+        run: |
+          mkdir -p .kamal
+          : > .kamal/secrets.${{ inputs.environment }}
+
+          echo '${{ toJson(vars) }}' | jq -r '
+            to_entries
+            | .[]
+            | "\(.key)=\(.value)"' >> .kamal/secrets.${{ inputs.environment }}
+
+          echo '${{ toJson(secrets) }}' | jq -r '
+            to_entries
+            | map(select(.key != "DEPLOYMENT_SSH_PRIVATE_KEY"))
+            | .[]
+            | "\(.key)=\(.value)"' >> .kamal/secrets.${{ inputs.environment }}
+
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> .kamal/secrets.${{ inputs.environment }}
+
+      - name: Set up Ruby ${{ env.RUBY_VERSION }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Install Kamal ${{ env.KAMAL_VERSION }}
+        run: gem install kamal -v ${{ env.KAMAL_VERSION }}
+
+      - name: Prune old GHCR image tags
+        env:
+          OWNER: ${{ env.GITHUB_REGISTRY_OWNER }}
+          IMAGE_NAME: "${{ env.GITHUB_REGISTRY_IMAGE_BASE_NAME }}_${{ inputs.environment }}"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          KEEP=2
+
+          echo "Fetching tags for ghcr.io/${OWNER}/${IMAGE_NAME}..."
+
+          gh api "users/${OWNER}/packages/container/${IMAGE_NAME}/versions" \
+            --paginate \
+            | jq -r '.[].id' \
+            | tail -n +$((KEEP + 1)) \
+            | while read -r VERSION_ID; do
+                echo "Deleting version: $VERSION_ID"
+                gh api -X DELETE "users/${OWNER}/packages/container/${IMAGE_NAME}/versions/${VERSION_ID}"
+              done
+
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOYMENT_SSH_PRIVATE_KEY }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ env.GITHUB_REGISTRY_OWNER }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Export VITE_PUBLIC_* vars to GITHUB_ENV for Docker build args
+        run: |
+          echo '${{ toJson(vars) }}' | jq -r '
+            to_entries
+            | map(select(.key | startswith("VITE_PUBLIC_")))
+            | .[]
+            | "\(.key)=\(.value)"' >> "$GITHUB_ENV"
+
+      - name: Build with Kamal
+        run: kamal build push -d ${{ inputs.environment }}
+
+      - name: Deploy with Kamal
+        run: kamal deploy -d ${{ inputs.environment }} --skip-push

@@ -1,0 +1,93 @@
+service: app_flow_starter
+image: laterolabs/app_flow_starter
+
+ssh:
+  user: deployer
+
+servers:
+  web:
+    proxy:
+      ssl: true
+  rpc:
+    cmd: bundle exec anycable
+    env:
+      clear:
+        ANYCABLE_RPC_HOST: 0.0.0.0:50051
+    proxy: false
+
+registry:
+  server: ghcr.io
+  username: laterolabs
+  password:
+    - GITHUB_TOKEN
+
+env:
+  secret:
+    - APP_HOST
+    - COOKIE_DOMAIN
+    - APP_PROTOCOL
+    - DEFAULT_FROM_EMAIL
+    - SECRET_KEY_BASE
+    - DATABASE_URL
+    - REDIS_URL
+    - ANYCABLE_REDIS_URL
+    - CABLE_URL
+    - RESEND_API_KEY
+    - WEB_CONCURRENCY
+    - RAILS_MAX_THREADS
+    - RAILS_LOG_LEVEL
+    - VITE_PUBLIC_POSTHOG_HOST
+    - VITE_PUBLIC_POSTHOG_KEY
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
+
+asset_path: /rails/public/vite/assets
+
+builder:
+  arch: amd64
+  args:
+    RUBY_VERSION: 4.0.2
+    NODE_VERSION: 24.14.0
+    VITE_PUBLIC_POSTHOG_HOST: <%= ENV["VITE_PUBLIC_POSTHOG_HOST"] %>
+    VITE_PUBLIC_POSTHOG_KEY: <%= ENV["VITE_PUBLIC_POSTHOG_KEY"] %>
+
+accessories:
+  postgres:
+    image: postgres:18-bookworm
+    port: 5432
+    env:
+      secret:
+        - POSTGRES_PASSWORD
+    directories:
+      - data:/var/lib/postgresql
+  redis:
+    image: redis:8.6.2-trixie
+    port: 6379
+    cmd: "/bin/sh -c 'redis-server --requirepass $REDIS_PASSWORD'"
+    env:
+      secret:
+        - REDIS_PASSWORD
+    directories:
+      - data:/data
+  anycable_go:
+    image: anycable/anycable-go:1.6
+    port: 8080
+    env:
+      clear:
+        ANYCABLE_LOG_LEVEL: debug
+        ANYCABLE_HOST: "0.0.0.0"
+        ANYCABLE_PORT: 8080
+        ANYCABLE_BROADCAST_ADAPTER: redisx
+        ANYCABLE_PUBSUB: redis
+        ANYCABLE_REDIS_CHANNEL: __anycable__
+      secret:
+        - ANYCABLE_REDIS_URL
+    proxy:
+      ssl: true
+      app_port: 8080
+      healthcheck:
+        path: /health

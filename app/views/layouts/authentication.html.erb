@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= @page_title || content_for(:title) || "App Flow Starter" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="App Flow Starter">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#264653">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png?v=starter-app" type="image/png">
+    <link rel="shortcut icon" href="/icon.png?v=starter-app" type="image/png">
+    <link rel="apple-touch-icon" href="/icon.png?v=starter-app">
+
+    <% if vite_manifest_available?("auth-toast.jsx") %>
+      <%= vite_stylesheet_tag "application" %>
+      <%= vite_react_refresh_tag %>
+      <%= vite_client_tag %>
+      <%= vite_javascript_tag "auth-toast.jsx" %>
+    <% elsif vite_manifest_available?("application.css") %>
+      <%= vite_stylesheet_tag "application" %>
+    <% end %>
+  </head>
+
+  <body class="auth-body">
+    <div
+      id="auth-toast-root"
+      data-alert="<%= alert.to_s %>"
+      data-notice="<%= notice.to_s %>"
+    ></div>
+
+    <%= yield %>
+  </body>
+</html>

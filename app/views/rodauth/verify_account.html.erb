@@ -1,0 +1,37 @@
+<section class="auth-shell">
+  <div class="auth-panel">
+    <div class="auth-card">
+      <%= render "auth_card_logo" %>
+      <h2 class="auth-title">
+        Verify your account
+      </h2>
+      <p class="auth-subtitle">
+        <% if rodauth.verify_account_set_password? %>
+          Set your password to finish joining the platform.
+        <% else %>
+          Confirm your email to finish activating your account.
+        <% end %>
+      </p>
+
+      <%= form_with url: rodauth.verify_account_path, method: :post, data: { turbo: false }, class: "auth-form" do |form| %>
+        <% if rodauth.verify_account_set_password? %>
+          <div class="auth-field">
+            <%= form.label "password", rodauth.password_label, class: "auth-label" %>
+            <%= form.password_field rodauth.password_param, value: "", id: "password", autocomplete: "new-password", required: true, class: "auth-input #{'auth-input-error' if rodauth.field_error(rodauth.password_param)}", aria: ({ invalid: true, describedby: "password_error_message" } if rodauth.field_error(rodauth.password_param)) %>
+            <%= content_tag(:span, rodauth.field_error(rodauth.password_param), class: "auth-error", id: "password_error_message") if rodauth.field_error(rodauth.password_param) %>
+          </div>
+
+          <% if rodauth.require_password_confirmation? %>
+            <div class="auth-field">
+              <%= form.label "password-confirm", rodauth.password_confirm_label, class: "auth-label" %>
+              <%= form.password_field rodauth.password_confirm_param, value: "", id: "password-confirm", autocomplete: "new-password", required: true, class: "auth-input #{'auth-input-error' if rodauth.field_error(rodauth.password_confirm_param)}", aria: ({ invalid: true, describedby: "password-confirm_error_message" } if rodauth.field_error(rodauth.password_confirm_param)) %>
+              <%= content_tag(:span, rodauth.field_error(rodauth.password_confirm_param), class: "auth-error", id: "password-confirm_error_message") if rodauth.field_error(rodauth.password_confirm_param) %>
+            </div>
+          <% end %>
+        <% end %>
+
+        <%= form.submit "Verify account", class: "auth-button" %>
+      <% end %>
+    </div>
+  </div>
+</section>

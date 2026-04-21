@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the Flowcast Postgres backup freshness check
+
+[Timer]
+OnCalendar={{ postgres_backup_check_schedule }}
+Persistent=true
+RandomizedDelaySec=10m
+Unit=flowcast-postgres-backup-check.service
+
+[Install]
+WantedBy=timers.target

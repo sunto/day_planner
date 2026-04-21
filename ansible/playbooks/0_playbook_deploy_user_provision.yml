@@ -1,0 +1,17 @@
+---
+- name: provision deployer user
+  vars_files:
+    - ../{{ansible_stage}}/group_vars/0_playbook_vars.yml
+    - ../{{ansible_stage}}/group_vars/secrets.yml
+  hosts: all
+  gather_facts: true
+
+  remote_user: "root"
+  become: yes
+
+  # ensure you have the public keys available locally before running this playbook
+  roles:
+    - role: lnovara.deploy-user
+      public_keys:
+        - ~/.ssh/id_rsa.pub
+        - ~/.ssh/gh-actions-latero.pub

@@ -1,0 +1,11 @@
+[Unit]
+Description=Flowcast Postgres backup freshness check
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=root
+Environment=POSTGRES_CONTAINER_NAME={{ postgres_backup_container_name }}
+Environment=POSTGRES_BACKUP_MAX_AGE_HOURS={{ postgres_backup_max_age_hours }}
+ExecStart=/usr/local/libexec/flowcast/postgres/check-backups.sh

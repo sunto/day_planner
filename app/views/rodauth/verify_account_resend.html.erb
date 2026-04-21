@@ -1,0 +1,21 @@
+<section class="auth-shell">
+  <div class="auth-panel">
+    <div class="auth-card">
+      <%= render "auth_card_logo" %>
+      <h2 class="auth-title">Resend invitation</h2>
+      <p class="auth-subtitle">
+        Enter your email address and we’ll send a fresh link so you can finish joining the platform.
+      </p>
+
+      <%= form_with url: rodauth.verify_account_resend_path, method: :post, data: { turbo: false }, class: "auth-form" do |form| %>
+        <div class="auth-field">
+          <%= form.label "login", rodauth.login_label, class: "auth-label" %>
+          <%= form.email_field rodauth.login_param, value: params[rodauth.login_param], id: "login", autocomplete: "email", required: true, class: "auth-input #{'auth-input-error' if rodauth.field_error(rodauth.login_param)}", aria: ({ invalid: true, describedby: "login_error_message" } if rodauth.field_error(rodauth.login_param)) %>
+          <%= content_tag(:span, rodauth.field_error(rodauth.login_param), class: "auth-error", id: "login_error_message") if rodauth.field_error(rodauth.login_param) %>
+        </div>
+
+        <%= form.submit "Send new link", class: "auth-button" %>
+      <% end %>
+    </div>
+  </div>
+</section>

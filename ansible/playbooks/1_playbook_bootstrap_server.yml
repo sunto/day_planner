@@ -1,0 +1,13 @@
+---
+- name: Bootstrap server
+  vars_files:
+    - ../{{ansible_stage}}/group_vars/secrets.yml
+    - ../{{ansible_stage}}/group_vars/1_playbook_vars.yml
+  hosts: all
+  gather_facts: true
+
+  remote_user: "{{deploy_user}}"
+  become: yes
+
+  roles:
+    - role: geerlingguy.swap

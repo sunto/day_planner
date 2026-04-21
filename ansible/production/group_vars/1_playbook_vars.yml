@@ -1,0 +1,5 @@
+# https://www.centos.org/docs/5/html/Deployment_Guide-en-US/ch-swapspace.html
+# CentOS suggestion: Twice the size of RAM if RAM is less than 2 GB
+# Size of RAM + 2 GB if RAM size is more than 2 GB i.e. 5GB of swap for 3GB of RAM
+# assuming these servers have 8GB of RAM
+swap_file_size_mb: 4096
