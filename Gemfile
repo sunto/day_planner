@@ -8,7 +8,7 @@ gem "pg", "~> 1.1"
 gem "puma", ">= 5.0"
 
 # Use Vite for the JavaScript pipeline
-gem "vite_rails", "~> 3.0"
+gem "vite_rails", "~> 3.11"
 
 # Use Inertia for server-driven SPA pages
 gem "inertia_rails", "~> 3.0"
