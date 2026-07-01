@@ -11,7 +11,7 @@ gem "puma", ">= 5.0"
 gem "vite_rails", "~> 3.0"
 
 # Use Inertia for server-driven SPA pages
-gem "inertia_rails", "~> 3.0"
+gem "inertia_rails", "~> 3.21"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
